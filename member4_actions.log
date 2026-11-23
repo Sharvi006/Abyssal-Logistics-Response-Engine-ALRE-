@@ -1,0 +1,17 @@
+[ACTION] UPDATE_SUPPLY - Medical Kits = 50
+[ACTION] ADD_ZONE - Added zone: dehli
+[ACTION] UPDATE_SUPPLY - oxygen = 21
+[ACTION] VIEW_STATUS - Displayed center status
+[ACTION] SAVE_STATE - Saved to relief_state.ser
+[ACTION] LOAD_STATE - Loaded from relief_state.ser
+[ACTION] EXIT - Console session ended
+[ACTION] ADD_EVENT - Z-03 - kerela (Severe Flooding (4.0m surge))
+[ACTION] VIEW_STATUS - Displayed full center status
+[ACTION] SAVE_STATE - Saved to relief_state.ser
+[ACTION] LOAD_STATE - Loaded from relief_state.ser
+[ACTION] ADD_EVENT - E-01 at Pakistan (Severity 2)
+[ACTION] ADD_RESPONDER - P-101 - Sharvi Sharma
+[ACTION] UPDATE_SUPPLY - water = 80
+[ACTION] ALLOCATE_SUPPLY - Zone 4 <- 90 of water
+[ACTION] INSPECT_KIT - MK-02 (Antibiotics=false)
+[ACTION] EXIT - Console session ended
