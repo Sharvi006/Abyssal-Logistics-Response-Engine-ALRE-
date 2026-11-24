@@ -15,3 +15,19 @@
 [ACTION] ALLOCATE_SUPPLY - Zone 4 <- 90 of water
 [ACTION] INSPECT_KIT - MK-02 (Antibiotics=false)
 [ACTION] EXIT - Console session ended
+[ACTION] SAFETY_ALERT - Zone (2,3) -> Zone is contaminated!
+[ACTION] ADD_EVENT - E-01 at 0 (Severity 5)
+[ACTION] EXIT - Console session ended
+[ACTION] CASCADING_SPILL - Toxic spill (3) triggered at (2,3)
+[ACTION] TRAVERSE_OK - Traversed (2,1)
+[ACTION] EXIT - Console session ended
+[ACTION] DEPLOY_VEHICLE - [RV-02] Fire Truck -> Zone: 2,3 (Severity 4/5)
+[ACTION] TOWER_REPAIRED - Dispatched 1 active vehicle(s)
+[ACTION] BLACKOUT_QUEUED - RV-03 -> blackout_queue.dat
+[ACTION] TOWER_REPAIRED - Dispatched 2 active vehicle(s)
+[ACTION] EXIT - Console session ended
+[ACTION] QUARANTINE_LOCK - Locked ID 8874 in Z-02
+[ACTION] EXIT - Console session ended
+[ACTION] SAVE_STATE - Saved to relief_state.ser
+[ACTION] LOAD_STATE - Loaded from relief_state.ser
+[ACTION] EXIT - Console session ended
