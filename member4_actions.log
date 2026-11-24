@@ -40,3 +40,11 @@
 [ACTION] TRIAGE_VIEW - Displayed sorted triage roster
 [ACTION] TRIAGE_PURGE - Removed 1 resolved zone(s)
 [ACTION] EXIT - Console session ended
+[ACTION] EXIT - Console session ended
+[ACTION] SAVE_STATE - Saved to relief_state.ser
+[ACTION] EXIT - Console session ended
+[ACTION] EXIT - Console session ended
+[ACTION] SAFETY_ALERT - Zone (2,3) -> Zone is contaminated!
+[ACTION] CASCADING_SPILL - Toxic spill (3) triggered at (1,2)
+[ACTION] TRAVERSE_OK - Traversed (1,0)
+[ACTION] EXIT - Console session ended

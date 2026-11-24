@@ -24,23 +24,30 @@ import java.util.Random;
 import java.util.TreeSet;
 
 public class ReliefState implements Serializable {
-    private static final long serialVersionUID = 9L;
+    private static final long serialVersionUID = 10L;
     public static final String BLACKOUT_FILE = "blackout_queue.dat";
 
-    private static final Comparator<PriorityZoneEntry> TRIAGE_COMPARATOR = (a, b) -> {
-        if (a.getZoneId().equalsIgnoreCase(b.getZoneId())) {
-            return 0; // Treat same zoneId as equal so TreeSet updates cleanly
+    private static class TriageComparator implements Comparator<PriorityZoneEntry>, Serializable {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public int compare(PriorityZoneEntry a, PriorityZoneEntry b) {
+            if (a.getZoneId().equalsIgnoreCase(b.getZoneId())) {
+                return 0;
+            }
+            int bySeverity = Integer.compare(b.getSeverity(), a.getSeverity());
+            if (bySeverity != 0) {
+                return bySeverity;
+            }
+            int byDeficit = Integer.compare(b.getSupplyDeficit(), a.getSupplyDeficit());
+            if (byDeficit != 0) {
+                return byDeficit;
+            }
+            return a.getZoneId().compareToIgnoreCase(b.getZoneId());
         }
-        int bySeverity = Integer.compare(b.getSeverity(), a.getSeverity()); // Higher severity first
-        if (bySeverity != 0) {
-            return bySeverity;
-        }
-        int byDeficit = Integer.compare(b.getSupplyDeficit(), a.getSupplyDeficit()); // Larger deficit first
-        if (byDeficit != 0) {
-            return byDeficit;
-        }
-        return a.getZoneId().compareToIgnoreCase(b.getZoneId());
-    };
+    }
+
+    private static final Comparator<PriorityZoneEntry> TRIAGE_COMPARATOR = new TriageComparator();
 
     private String centerName;
     private int logisticsCapacity;
@@ -126,7 +133,6 @@ public class ReliefState implements Serializable {
 
     public void addOrUpdateTriageZone(String zoneId, int severity, int supplyDeficit) {
         ensureTransientLists();
-        // Remove prior entry with same zoneId using Iterator to avoid duplicates
         Iterator<PriorityZoneEntry> it = triageRoster.iterator();
         while (it.hasNext()) {
             PriorityZoneEntry entry = it.next();
