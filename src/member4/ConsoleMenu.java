@@ -74,6 +74,7 @@ public class ConsoleMenu {
                 case 11 -> handleDeployRescueVehicle();
                 case 12 -> handleRepairRadioTower();
                 case 13 -> handleQuarantineCipher();
+                case 14 -> handlePriorityTriageRoster();
                 case 0 -> {
                     logSafe("EXIT", "Console session ended");
                     if (auditLogger != null) {
@@ -110,6 +111,7 @@ public class ConsoleMenu {
         System.out.println("11. Deploy Rescue Vehicle (Ghost Queue Blackout)");
         System.out.println("12. Repair Radio Tower & Dispatch Queue");
         System.out.println("13. Quarantine Cipher (Victim ID & Roster)");
+        System.out.println("14. Priority Triage & Supply Roster (TreeSet)");
         System.out.println("0. Exit");
     }
 
@@ -208,6 +210,11 @@ public class ConsoleMenu {
         System.out.println("\nQuarantine Locked IDs (" + state.getQuarantineRoster().size() + "):");
         for (Map.Entry<String, String> entry : state.getQuarantineRoster().entrySet()) {
             System.out.println("  Locked ID: " + entry.getKey() + " | Zone: " + entry.getValue());
+        }
+
+        System.out.println("\nPriority Triage Roster (" + state.getTriageRoster().size() + "):");
+        for (PriorityZoneEntry pze : state.getTriageRoster()) {
+            System.out.println("  " + pze);
         }
 
         System.out.println("\nMap Supply Inventory:");
@@ -358,6 +365,36 @@ public class ConsoleMenu {
                 }
             }
             logSafe("QUARANTINE_DECRYPT", "Viewed by MedicalOfficer " + officerId);
+        }
+    }
+
+    private void handlePriorityTriageRoster() {
+        System.out.println("1. Add/Update Priority Zone   2. View Sorted Roster   3. Purge Resolved Zones (0 Deficit)");
+        int op = readInt("Choice: ");
+
+        if (op == 1) {
+            String zoneId = readLine("Zone ID (e.g., Z-NORTH): ");
+            int severity = readInt("Severity (1-5): ");
+            int deficit = readInt("Supply Deficit (0 if fully supplied): ");
+            state.addOrUpdateTriageZone(zoneId, severity, deficit);
+            System.out.println("Added/updated " + zoneId + " in TreeSet triage roster.");
+            logSafe("TRIAGE_ADD", zoneId + " sev=" + severity + " def=" + deficit);
+        } else if (op == 2) {
+            System.out.println("\n--- Sorted Priority Triage Roster (Highest Priority First) ---");
+            if (state.getTriageRoster().isEmpty()) {
+                System.out.println("  (Roster empty)");
+            } else {
+                int rank = 1;
+                for (PriorityZoneEntry entry : state.getTriageRoster()) {
+                    System.out.println("  " + rank++ + ". " + entry);
+                }
+            }
+            logSafe("TRIAGE_VIEW", "Displayed sorted triage roster");
+        } else {
+            int maxSev = readInt("Purge resolved (0 deficit) zones with severity up to (1-5): ");
+            int removed = state.purgeResolvedZones(maxSev);
+            System.out.println("Purged " + removed + " resolved zone(s) safely via Iterator.");
+            logSafe("TRIAGE_PURGE", "Removed " + removed + " resolved zone(s)");
         }
     }
 

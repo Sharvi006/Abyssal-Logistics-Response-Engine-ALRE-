@@ -14,15 +14,33 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.TreeSet;
 
 public class ReliefState implements Serializable {
-    private static final long serialVersionUID = 8L;
+    private static final long serialVersionUID = 9L;
     public static final String BLACKOUT_FILE = "blackout_queue.dat";
+
+    private static final Comparator<PriorityZoneEntry> TRIAGE_COMPARATOR = (a, b) -> {
+        if (a.getZoneId().equalsIgnoreCase(b.getZoneId())) {
+            return 0; // Treat same zoneId as equal so TreeSet updates cleanly
+        }
+        int bySeverity = Integer.compare(b.getSeverity(), a.getSeverity()); // Higher severity first
+        if (bySeverity != 0) {
+            return bySeverity;
+        }
+        int byDeficit = Integer.compare(b.getSupplyDeficit(), a.getSupplyDeficit()); // Larger deficit first
+        if (byDeficit != 0) {
+            return byDeficit;
+        }
+        return a.getZoneId().compareToIgnoreCase(b.getZoneId());
+    };
 
     private String centerName;
     private int logisticsCapacity;
@@ -31,6 +49,7 @@ public class ReliefState implements Serializable {
     private int[][] contaminationGrid;
     private List<RescueVehicle> activeDeployments;
     private Map<String, String> quarantineRoster;
+    private TreeSet<PriorityZoneEntry> triageRoster;
 
     private transient LogisticsManagerArray logisticsManager;
     private transient List<DisasterEvent> disasterEvents;
@@ -48,6 +67,7 @@ public class ReliefState implements Serializable {
         this.contaminationGrid = new int[4][4];
         this.activeDeployments = new ArrayList<>();
         this.quarantineRoster = new LinkedHashMap<>();
+        this.triageRoster = new TreeSet<>(TRIAGE_COMPARATOR);
         this.disasterEvents = new ArrayList<>();
         this.personnelList = new ArrayList<>();
         this.sessionNote = "Active Console Session";
@@ -73,6 +93,9 @@ public class ReliefState implements Serializable {
         if (this.quarantineRoster == null) {
             this.quarantineRoster = new LinkedHashMap<>();
         }
+        if (this.triageRoster == null) {
+            this.triageRoster = new TreeSet<>(TRIAGE_COMPARATOR);
+        }
     }
 
     public String getCenterName() { return centerName; }
@@ -94,6 +117,39 @@ public class ReliefState implements Serializable {
     public Map<String, String> getQuarantineRoster() {
         ensureTransientLists();
         return quarantineRoster;
+    }
+
+    public TreeSet<PriorityZoneEntry> getTriageRoster() {
+        ensureTransientLists();
+        return triageRoster;
+    }
+
+    public void addOrUpdateTriageZone(String zoneId, int severity, int supplyDeficit) {
+        ensureTransientLists();
+        // Remove prior entry with same zoneId using Iterator to avoid duplicates
+        Iterator<PriorityZoneEntry> it = triageRoster.iterator();
+        while (it.hasNext()) {
+            PriorityZoneEntry entry = it.next();
+            if (entry.getZoneId().equalsIgnoreCase(zoneId)) {
+                it.remove();
+            }
+        }
+        triageRoster.add(new PriorityZoneEntry(zoneId, severity, supplyDeficit));
+        addZone(zoneId);
+    }
+
+    public int purgeResolvedZones(int maxSeverityToPurge) {
+        ensureTransientLists();
+        int removedCount = 0;
+        Iterator<PriorityZoneEntry> it = triageRoster.iterator();
+        while (it.hasNext()) {
+            PriorityZoneEntry entry = it.next();
+            if (entry.getSeverity() <= maxSeverityToPurge && entry.getSupplyDeficit() <= 0) {
+                it.remove();
+                removedCount++;
+            }
+        }
+        return removedCount;
     }
 
     public int[][] getContaminationGrid() {

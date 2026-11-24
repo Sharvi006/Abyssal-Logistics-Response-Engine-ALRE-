@@ -31,3 +31,12 @@
 [ACTION] SAVE_STATE - Saved to relief_state.ser
 [ACTION] LOAD_STATE - Loaded from relief_state.ser
 [ACTION] EXIT - Console session ended
+[ACTION] TRIAGE_ADD - Z-EAST sev=5 def=46
+[ACTION] TRIAGE_VIEW - Displayed sorted triage roster
+[ACTION] TRIAGE_ADD - Z-WEST sev=2 def=78
+[ACTION] TRIAGE_ADD - Z-NORTH sev=4 def=0
+[ACTION] TRIAGE_VIEW - Displayed sorted triage roster
+[ACTION] TRIAGE_PURGE - Removed 0 resolved zone(s)
+[ACTION] TRIAGE_VIEW - Displayed sorted triage roster
+[ACTION] TRIAGE_PURGE - Removed 1 resolved zone(s)
+[ACTION] EXIT - Console session ended
